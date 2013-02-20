@@ -16,6 +16,10 @@
             for (i in d) {
                 if (d.hasOwnProperty(i)) {
                     cfg[i] = n[i] || d[i];
+
+                    if (typeof n[i] === 'boolean' && !n[i]) {
+                        cfg[i] = n[i];
+                    }
                 }
             }
             return cfg;
