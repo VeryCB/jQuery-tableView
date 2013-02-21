@@ -3,11 +3,11 @@
     var _id = 'table-view',
         _ids = [],
 
-        _CSS_TABLE_VIEW = 'table-view',
-
         _default_config = {
+            title: [],
             data: [],
-            checkBox: true
+            checkBox: true,
+            tableClass: 'table'
         },
 
         _config = function (n, d) {
@@ -25,7 +25,7 @@
             return cfg;
         },
 
-        _templ = '<table id="{ID}" class="' + _CSS_TABLE_VIEW + '">\
+        _templ = '<table id="{ID}" class="{CLASS}">\
                     <thead>\
                         <tr>\
                         </tr>\
@@ -54,9 +54,10 @@
 
             this.id = id;
             this.selected = [];
-            this.title = Object.keys(cfg.data[0]);
+            this.title = cfg.title;
             this.data = cfg.data;
             this.checkBox = cfg.checkBox;
+            this.tableClass = cfg.tableClass;
 
             this.render();
 
@@ -64,7 +65,7 @@
         },
 
         render: function () {
-            this.$element.html(_templ.replace('{ID}', this.id).replace('{FOOTER_ID}', this.id + '-footer'));
+            this.$element.html(_templ.replace('{ID}', this.id).replace('{CLASS}', this.tableClass));
 
             this.node = $('#' + this.id);
             this.titleNode = $('thead tr', this.node);
@@ -82,7 +83,7 @@
                 checkBox = this.checkBox;
 
             if (typeof checkBox === 'boolean' && checkBox) {
-                this.titleNode.append('<td><label class="' + _CSS_TABLE_VIEW + '-checkbox"><input type="checkbox"></label></td>');
+                this.titleNode.append('<td><label class="checkbox"><input type="checkbox"></label></td>');
             }
 
             for (i in title) {
@@ -93,9 +94,11 @@
         },
 
         renderBody: function () {
-            var rowContent, item, i, o,
+            var rowContent, item, c, i, o, cellData, cData, tmpData,
                 checkBox = this.checkBox,
+                urlPattern = /^http/,
                 data = this.data;
+
             this.bodyNode.empty();
 
             for (item in data) {
@@ -107,7 +110,25 @@
                 }
                 
                 for (i in o) {
-                    rowContent += '<td>' + o[i] + '</td>';
+                    cellData = o[i];
+
+                    if (typeof cellData === 'string' && urlPattern.test(cellData)) {
+                        cellData = '<a href="' + cellData + '" target="_blank">' + cellData + '</a>';
+                    } else if (typeof cellData === 'object') {
+                        tmpData = ''
+
+                        for (c in cellData) {
+                            cData = cellData[c];
+
+                            if (urlPattern.test(cData)) {
+                                tmpData += '<a href="' + cData + '" target="_blank">' + cData + '</a><br />';
+                            }
+                        }
+
+                        cellData = tmpData;
+                    }
+
+                    rowContent += '<td>' + cellData + '</td>';
                 } 
 
                 rowContent += '</tr>';
