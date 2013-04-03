@@ -6,6 +6,7 @@
         _default_config = {
             title: [],
             data: [],
+            firstKey: null,
             checkBox: true,
             tableClass: 'table'
         },
@@ -54,8 +55,9 @@
 
             this.id = id;
             this.selected = [];
-            this.title = cfg.title;
-            this.data = cfg.data;
+            this.firstKey = cfg.firstKey;
+            this.data = this.firstKey ? this.resortData(cfg.data, this.firstKey) : cfg.data;
+            this.title = cfg.title.length === 0 ? Object.keys(this.data[0]) : cfg.title;
             this.checkBox = cfg.checkBox;
             this.tableClass = cfg.tableClass;
 
@@ -101,6 +103,7 @@
 
             this.bodyNode.empty();
 
+
             for (item in data) {
                 o = data[item];
                 rowContent = '<tr>';
@@ -135,6 +138,38 @@
 
                 this.bodyNode.append(rowContent);
             }
+        },
+
+        resortData: function(data, firstKey) {
+            var o, _data = [];
+
+            for (o in data) {
+                var _o = {},
+                    sortObject = function (object) {
+                        for (key in object) {
+                            if (!object.hasOwnProperty(key)) {
+                                continue;
+                            }
+
+                            if (Object.keys(_o).length === 0 && key === firstKey) {
+                                _o[firstKey] = object[firstKey];
+                                sortObject(object);
+                            } else if (Object.keys(_o).length !== 0) {
+                                _o[key] = object[key];
+                            }
+                        }
+                    };
+
+                if (!data.hasOwnProperty(o)) {
+                    continue;
+                }
+                
+                sortObject(data[o]);
+
+                _data.push(_o);
+            }
+
+            return _data;
         },
 
         //TODO
