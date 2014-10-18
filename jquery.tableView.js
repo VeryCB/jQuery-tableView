@@ -54,7 +54,6 @@
             _ids.push(id);
 
             this.id = id;
-            this.selected = [];
             this.firstKey = cfg.firstKey;
             this.data = this.firstKey ? this.resortData(cfg.data, this.firstKey) : cfg.data;
             this.title = cfg.title.length === 0 ? Object.keys(this.data[0]) : cfg.title;
@@ -111,7 +110,7 @@
                 if (typeof checkBox === 'boolean' && checkBox) {
                     rowContent += '<td><label><input type="checkbox" /></label></td>';
                 }
-                
+
                 for (i in o) {
                     cellData = o[i];
 
@@ -163,31 +162,13 @@
                 if (!data.hasOwnProperty(o)) {
                     continue;
                 }
-                
+
                 sortObject(data[o]);
 
                 _data.push(_o);
             }
 
             return _data;
-        },
-
-        //TODO
-        addSelection: function (id) {
-            var i;
-
-            for (i in this.selected) {
-                if (this.selected[i] === id) {
-                    return
-                }
-            }
-        },
-
-        //TODO
-        removeSelection: function (id, email) {
-            this.selected = $.grep(this.selected, function (value) {
-                return value !==id;
-            });
         }
     };
 
